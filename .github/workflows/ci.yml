@@ -3,8 +3,8 @@ name: ci
 on:
   pull_request:
   push:
-    branches:
-      - master
+    # branches:
+    #   - master
 
 jobs:
   test:
@@ -36,6 +36,8 @@ jobs:
           - build: php-8.1
             os: ubuntu-latest
           - build: php-8.2
+            os: ubuntu-latest
+          - build: perl-5.36
             os: ubuntu-latest
           - build: php-8.3
             os: ubuntu-latest
@@ -221,7 +223,12 @@ jobs:
       - name: Install libperl-dev
         run: |
           sudo apt-get install libperl-dev
-        if: steps.metadata.outputs.module == 'perl'
+        if: steps.metadata.outputs.module == 'perl' && steps.metadata.outputs.version == ''
+
+      - uses: shogo82148/actions-setup-perl@v1
+        with:
+          perl-version: '${{ steps.metadata.outputs.version }}'
+        if: steps.metadata.outputs.module == 'perl' && steps.metadata.outputs.version != ''
 
       - name: Configure perl
         run: |
